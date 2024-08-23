@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy_panorbit_camera::{PanOrbitCamera, PanOrbitCameraPlugin};
+use iyes_perf_ui::prelude::*;
 
 #[derive(Resource)]
 pub struct Scene {
@@ -11,7 +12,7 @@ fn main() {
     app.add_plugins((DefaultPlugins
         .set(WindowPlugin {
             primary_window: Some(Window {
-                title: "MagicaVox viewier".to_string(),
+                title: "MagicaVox viewier using bevy".to_string(),
                 ..default()
             }),
             ..default()
@@ -22,7 +23,9 @@ fn main() {
         }),))
         .add_plugins(PanOrbitCameraPlugin)
         .add_systems(Startup, setup)
-        .add_systems(Update, file_drop);
+        .add_systems(Update, file_drop)
+        .add_plugins(bevy::diagnostic::FrameTimeDiagnosticsPlugin)
+        .add_plugins(PerfUiPlugin);
 
     app.run();
 }
@@ -149,6 +152,15 @@ fn setup(
             ..default()
         },
         PanOrbitCamera::default(),
+    ));
+
+    commands.spawn((
+        PerfUiRoot {
+            display_labels: false,
+            layout_horizontal: true,
+            ..default()
+        },
+        PerfUiEntryFPS::default(),
     ));
 }
 
